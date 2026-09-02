@@ -1,5 +1,15 @@
 import 'package:get_it/get_it.dart';
 
+import '../../features/diary/data/datasources/diary_local_datasource.dart';
+import '../../features/diary/data/repositories/diary_repository_impl.dart';
+import '../../features/diary/domain/repositories/diary_repository.dart';
+import '../../features/diary/domain/usecases/add_diary_entry.dart';
+import '../../features/diary/domain/usecases/delete_diary_entry.dart';
+import '../../features/diary/domain/usecases/get_entries_for_date.dart';
+import '../../features/diary/domain/usecases/get_entries_for_range.dart';
+import '../../features/diary/domain/usecases/get_recent_foods.dart';
+import '../../features/diary/domain/usecases/update_diary_entry.dart';
+import '../../features/diary/presentation/cubit/daily_diary_cubit.dart';
 import '../../features/food_catalog/data/datasources/food_catalog_local_asset_datasource.dart';
 import '../../features/food_catalog/data/datasources/food_catalog_persisted_datasource.dart';
 import '../../features/food_catalog/data/repositories/food_catalog_repository_impl.dart';
@@ -62,6 +72,40 @@ abstract final class Injector {
           updateCustomFood: getIt<UpdateCustomFood>(),
           deleteCustomFood: getIt<DeleteCustomFood>(),
         ),
+      );
+
+    // ------------------------------------------------------------------
+    // Track 3 — Diary
+    // ------------------------------------------------------------------
+    getIt
+      ..registerLazySingleton<DiaryLocalDataSource>(
+        () => DiaryLocalDataSource(),
+      )
+      ..registerLazySingleton<DiaryRepository>(
+        () => DiaryRepositoryImpl(
+          localDataSource: getIt<DiaryLocalDataSource>(),
+        ),
+      )
+      ..registerLazySingleton<AddDiaryEntry>(
+        () => AddDiaryEntry(repository: getIt<DiaryRepository>()),
+      )
+      ..registerLazySingleton<UpdateDiaryEntry>(
+        () => UpdateDiaryEntry(repository: getIt<DiaryRepository>()),
+      )
+      ..registerLazySingleton<DeleteDiaryEntry>(
+        () => DeleteDiaryEntry(repository: getIt<DiaryRepository>()),
+      )
+      ..registerLazySingleton<GetEntriesForDate>(
+        () => GetEntriesForDate(repository: getIt<DiaryRepository>()),
+      )
+      ..registerLazySingleton<GetEntriesForRange>(
+        () => GetEntriesForRange(repository: getIt<DiaryRepository>()),
+      )
+      ..registerLazySingleton<GetRecentFoods>(
+        () => GetRecentFoods(repository: getIt<DiaryRepository>()),
+      )
+      ..registerFactory<DailyDiaryCubit>(
+        () => DailyDiaryCubit(getEntriesForDate: getIt<GetEntriesForDate>()),
       );
   }
 }

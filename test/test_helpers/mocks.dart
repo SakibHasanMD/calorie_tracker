@@ -1,5 +1,11 @@
 // Shared mocktail mock classes, centralized so each test file re-uses them
 // instead of redeclaring a mock per file.
+import 'package:calorie_tracker/features/diary/domain/repositories/diary_repository.dart';
+import 'package:calorie_tracker/features/diary/domain/usecases/add_diary_entry.dart';
+import 'package:calorie_tracker/features/diary/domain/usecases/get_entries_for_date.dart';
+import 'package:calorie_tracker/features/diary/domain/usecases/get_entries_for_range.dart';
+import 'package:calorie_tracker/features/diary/domain/usecases/get_recent_foods.dart';
+import 'package:calorie_tracker/features/diary/domain/usecases/update_diary_entry.dart';
 import 'package:calorie_tracker/features/food_catalog/data/datasources/food_catalog_local_asset_datasource.dart';
 import 'package:calorie_tracker/features/food_catalog/data/datasources/food_catalog_persisted_datasource.dart';
 import 'package:calorie_tracker/features/food_catalog/domain/repositories/food_catalog_repository.dart';
@@ -25,3 +31,15 @@ class MockAddCustomFood extends Mock implements AddCustomFood {}
 class MockUpdateCustomFood extends Mock implements UpdateCustomFood {}
 
 class MockDeleteCustomFood extends Mock implements DeleteCustomFood {}
+
+class MockDiaryRepository extends Mock implements DiaryRepository {}
+
+class MockAddDiaryEntry extends Mock implements AddDiaryEntry {}
+
+class MockUpdateDiaryEntry extends Mock implements UpdateDiaryEntry {}
+
+class MockGetEntriesForDate extends Mock implements GetEntriesForDate {}
+
+class MockGetEntriesForRange extends Mock implements GetEntriesForRange {}
+
+class MockGetRecentFoods extends Mock implements GetRecentFoods {}

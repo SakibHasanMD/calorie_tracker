@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/injector.dart';
 import '../../../../core/widgets/loading_view.dart';
+import '../../../diary/presentation/cubit/daily_diary_cubit.dart';
+import '../../../diary/presentation/pages/entry_form_page.dart';
 import '../cubit/food_catalog_cubit.dart';
 import '../cubit/food_catalog_state.dart';
 import 'manage_foods_page.dart';
@@ -20,16 +22,23 @@ class FoodCatalogHostPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider<FoodCatalogCubit>(
       create: (_) => Injector.getIt<FoodCatalogCubit>()..loadFoods(),
-      child: const _FoodCatalogHomeView(),
+      child: BlocProvider<DailyDiaryCubit>(
+        create: (_) =>
+            Injector.getIt<DailyDiaryCubit>()..load(_todayString()),
+        child: const _FoodCatalogHomeView(),
+      ),
     );
   }
 }
 
+/// Track 3 integration: temporary FAB to reach the diary entry form from the
+/// placeholder Home tab. The real Home UI lands in Track 4.
 class _FoodCatalogHomeView extends StatelessWidget {
   const _FoodCatalogHomeView();
 
   @override
   Widget build(BuildContext context) {
+    final dailyDiaryCubit = context.read<DailyDiaryCubit>();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
@@ -49,6 +58,19 @@ class _FoodCatalogHomeView extends StatelessWidget {
             },
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => EntryFormPage(
+                dailyDiaryCubit: dailyDiaryCubit,
+              ),
+            ),
+          );
+        },
+        tooltip: 'Add entry',
+        child: const Icon(Icons.add),
       ),
       body: BlocBuilder<FoodCatalogCubit, FoodCatalogState>(
         builder: (context, state) {
@@ -94,4 +116,11 @@ class _FoodCatalogHomeView extends StatelessWidget {
       ),
     );
   }
+}
+
+String _todayString() {
+  final now = DateTime.now();
+  final m = now.month.toString().padLeft(2, '0');
+  final d = now.day.toString().padLeft(2, '0');
+  return '${now.year}-$m-$d';
 }
