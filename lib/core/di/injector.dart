@@ -26,6 +26,8 @@ import '../../features/home/domain/usecases/get_calorie_target.dart';
 import '../../features/home/domain/usecases/set_calorie_target.dart';
 import '../../features/history/domain/usecases/get_calendar_summary.dart';
 import '../../features/history/presentation/cubit/history_cubit.dart';
+import '../../features/statistics/domain/usecases/calculate_statistics.dart';
+import '../../features/statistics/presentation/cubit/statistics_cubit.dart';
 
 /// Central dependency injection container.
 ///
@@ -145,6 +147,20 @@ abstract final class Injector {
       )
       ..registerFactory<HistoryCubit>(
         () => HistoryCubit(getCalendarSummary: getIt<GetCalendarSummary>()),
+      );
+
+    // ------------------------------------------------------------------
+    // Track 6 — Statistics
+    // ------------------------------------------------------------------
+    getIt
+      ..registerLazySingleton<CalculateStatistics>(
+        CalculateStatistics.new,
+      )
+      ..registerFactory<StatisticsCubit>(
+        () => StatisticsCubit(
+          getEntriesForRange: getIt<GetEntriesForRange>(),
+          calculateStatistics: getIt<CalculateStatistics>(),
+        ),
       );
   }
 }

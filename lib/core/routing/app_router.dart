@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/history/presentation/pages/history_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/statistics/presentation/pages/statistics_page.dart';
 
 /// Top-level navigation destinations shown in the bottom navigation bar.
 enum AppTab {
@@ -22,24 +23,6 @@ enum AppTab {
   final IconData icon;
   final IconData selectedIcon;
   final String label;
-}
-
-/// Placeholder page shown until a track replaces it with the real screen.
-///
-/// Track 1 wires these behind the bottom navigation so DI, routing and theming
-/// are all proven before any real feature exists.
-class PlaceholderPage extends StatelessWidget {
-  const PlaceholderPage({super.key, required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(label)),
-      body: const Center(child: Text('Coming soon')),
-    );
-  }
 }
 
 /// Builds the application's [GoRouter].
@@ -74,8 +57,7 @@ GoRouter buildAppRouter() {
             routes: [
               GoRoute(
                 path: AppTab.statistics.path,
-                builder: (context, state) =>
-                    const PlaceholderPage(label: 'Statistics'),
+                builder: (context, state) => const StatisticsPage(),
               ),
             ],
           ),
