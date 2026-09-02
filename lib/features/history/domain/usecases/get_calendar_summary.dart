@@ -1,6 +1,7 @@
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/error/failures.dart';
+import '../../../../core/utils/calendar.dart';
 import '../../../diary/domain/entities/diary_entry.dart';
 import '../../../diary/domain/usecases/get_entries_for_range.dart';
 import '../entities/calendar_summary.dart';
@@ -73,10 +74,10 @@ class GetCalendarSummary {
     } else {
       // day / week / month all bucket per-day across the period's span.
       final cursor = period == CalendarPeriod.week
-          ? _startOfWeek(referenceDate)
+          ? weekStart(referenceDate)
           : period == CalendarPeriod.month
               ? DateTime(referenceDate.year, referenceDate.month, 1)
-              : _dateOnly(referenceDate);
+              : dateOnly(referenceDate);
       final last = period == CalendarPeriod.day
           ? cursor
           : period == CalendarPeriod.week
@@ -93,7 +94,7 @@ class GetCalendarSummary {
 
     return CalendarSummary(
       period: period,
-      referenceDate: _dateOnly(referenceDate),
+      referenceDate: dateOnly(referenceDate),
       startDate: start,
       endDate: end,
       totalCalories: total,
@@ -107,39 +108,25 @@ class GetCalendarSummary {
     CalendarPeriod period,
     DateTime referenceDate,
   ) {
-    final r = _dateOnly(referenceDate);
+    final r = dateOnly(referenceDate);
     switch (period) {
       case CalendarPeriod.day:
-        final s = _format(r);
+        final s = formatYmd(r);
         return (start: s, end: s);
       case CalendarPeriod.week:
-        final monday = _startOfWeek(r);
-        final sunday = monday.add(const Duration(days: 6));
-        return (start: _format(monday), end: _format(sunday));
+        final sat = weekStart(r);
+        final fri = sat.add(const Duration(days: 6));
+        return (start: formatYmd(sat), end: formatYmd(fri));
       case CalendarPeriod.month:
         final first = DateTime(r.year, r.month, 1);
         final last = DateTime(r.year, r.month + 1, 0);
-        return (start: _format(first), end: _format(last));
+        return (start: formatYmd(first), end: formatYmd(last));
       case CalendarPeriod.year:
         final first = DateTime(r.year, 1, 1);
         final last = DateTime(r.year, 12, 31);
-        return (start: _format(first), end: _format(last));
+        return (start: formatYmd(first), end: formatYmd(last));
     }
   }
 
-  /// Monday-based start of the week containing [date].
-  static DateTime _startOfWeek(DateTime date) {
-    final day = date.weekday; // 1 = Monday ... 7 = Sunday
-    return _dateOnly(date).subtract(Duration(days: day - 1));
-  }
-
-  static DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
-
   static DateTime _firstOfMonth(DateTime d) => DateTime(d.year, d.month, 1);
-
-  static String _format(DateTime d) {
-    final m = d.month.toString().padLeft(2, '0');
-    final day = d.day.toString().padLeft(2, '0');
-    return '${d.year}-$m-$day';
-  }
 }

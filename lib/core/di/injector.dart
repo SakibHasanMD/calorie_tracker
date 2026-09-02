@@ -118,7 +118,7 @@ abstract final class Injector {
       );
 
     // ------------------------------------------------------------------
-    // Track 4 — Home
+    // Track 4 — Home (calorie target, date-scoped)
     // ------------------------------------------------------------------
     getIt
       ..registerLazySingleton<CalorieTargetLocalDataSource>(

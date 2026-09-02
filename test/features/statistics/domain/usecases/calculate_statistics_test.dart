@@ -44,7 +44,7 @@ void main() {
 
       expect(stats.referenceDate, DateTime(2024, 9, 26));
       expect(stats.todayCalories, 150);
-      // Mon 23 + Tue 24 + Wed 25 + Thu 26 + Fri 27 within week.
+      // "This week" follows Sat-Fri convention; Sat Sep 21..Fri Sep 27.
       expect(stats.weekCalories, 200 + 75 + 150);
       expect(stats.monthCalories, 300 + 25 + 200 + 75 + 150);
       // All time includes the 2023 entry too.

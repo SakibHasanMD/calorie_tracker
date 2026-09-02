@@ -50,14 +50,16 @@ void main() {
   });
 
   group('week', () {
-    test('spans a two-month boundary (Mon-Sun) with per-day buckets', () async {
-      // Wed 2024-08-28 -> week is Mon 2024-08-26 .. Sun 2024-09-01 (straddles Aug/Sep)
-      when(() => getEntriesForRange('2024-08-26', '2024-09-01'))
+    test('spans a Sat-Fri week (app locale convention) with per-day buckets',
+        () async {
+      // Wed 2024-08-28 → week is Sat 2024-08-24 .. Fri 2024-08-30.
+      when(() => getEntriesForRange('2024-08-24', '2024-08-30'))
           .thenAnswer(
             (_) async => Right([
-              entry('2024-08-28', 200),
-              entry('2024-08-31', 300),
-              entry('2024-09-01', 100),
+              entry('2024-08-26', 150), // Mon
+              entry('2024-08-28', 200), // Wed
+              entry('2024-08-30', 250), // Fri
+              entry('2024-08-31', 999), // outside (next week's Sat)
             ]),
           );
       final result =
@@ -66,17 +68,16 @@ void main() {
       expect(result.isRight(), isTrue);
       final summary = result.getRight().toNullable()!;
       expect(summary.period, CalendarPeriod.week);
-      expect(summary.startDate, '2024-08-26');
-      expect(summary.endDate, '2024-09-01');
-      expect(summary.buckets.length, 7); // full week
+      expect(summary.startDate, '2024-08-24');
+      expect(summary.endDate, '2024-08-30');
+      expect(summary.buckets.length, 7);
       expect(summary.totalCalories, 600);
 
-      // Map buckets by date.
       final byDay = {for (final b in summary.buckets) _fmt(b.date): b.calories};
+      expect(byDay['2024-08-24'], 0); // empty day still present
+      expect(byDay['2024-08-26'], 150);
       expect(byDay['2024-08-28'], 200);
-      expect(byDay['2024-08-31'], 300);
-      expect(byDay['2024-09-01'], 100);
-      expect(byDay['2024-08-26'], 0); // empty day still present
+      expect(byDay['2024-08-30'], 250);
     });
   });
 

@@ -76,7 +76,10 @@ class _EntryFormViewState extends State<_EntryFormView> {
   void initState() {
     super.initState();
     final cubit = context.read<DiaryFormCubit>();
-    if (widget.date != null && cubit.state.entryDate == null) {
+    // In add mode the cubit defaults to today; if the page was opened for a
+    // specific date, use that date so the user doesn't have to re-pick it.
+    // (Edit mode ignores [widget.date] — the entry's own date is preserved.)
+    if (widget.date != null && cubit.state.editingEntryId == null) {
       cubit.changeDate(widget.date!);
     }
     _amountController = TextEditingController(

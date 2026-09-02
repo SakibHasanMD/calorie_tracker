@@ -1,15 +1,23 @@
 import 'package:fpdart/fpdart.dart';
 
 import '../../../../core/error/failures.dart';
+import '../entities/calorie_target_scope.dart';
 
-/// Reads/writes the user's daily calorie target.
+/// Reads/writes date-scoped daily calorie targets.
 ///
-/// Lives in the `home` feature because it is a Home-only preference (not a
-/// full settings feature). Domain layer; implementations live in `data` and
-/// surface exceptions as [Failure]s.
+/// Targets are stored per calendar day; setting a target for a scope
+/// (day/week/month/year) writes the value to every day in that scope's range,
+/// so changing "this month" never rewrites other months. Lives in the `home`
+/// feature. Domain layer; implementations live in `data` and surface
+/// exceptions as [Failure]s.
 abstract interface class CalorieTargetRepository {
-  Future<Either<Failure, int>> getTarget();
+  /// The effective target for [date] (`YYYY-MM-DD`), or the default if unset.
+  Future<Either<Failure, int>> getTarget(String date);
 
-  Future<Either<Failure, Unit>> setTarget(int value);
+  /// Sets [value] for every day in [scope]'s range containing [date].
+  Future<Either<Failure, Unit>> setTarget(
+    String date,
+    int value,
+    CalorieTargetScope scope,
+  );
 }
-

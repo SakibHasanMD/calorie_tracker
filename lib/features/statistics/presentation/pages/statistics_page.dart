@@ -33,13 +33,7 @@ class _StatisticsView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Statistics'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Refresh',
-            onPressed: () => context.read<StatisticsCubit>().load(),
-          ),
-        ],
+        // Refresh is available via pull-to-refresh on the list below.
       ),
       body: BlocBuilder<StatisticsCubit, StatisticsState>(
         builder: (context, state) {

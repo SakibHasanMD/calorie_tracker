@@ -15,21 +15,22 @@ void main() {
     usecase = GetCalorieTarget(repository: repository);
   });
 
-  test('returns the target from the repository', () async {
-    when(() => repository.getTarget()).thenAnswer((_) async => const Right(2000));
-    final result = await usecase();
+  test('returns the target for the requested date', () async {
+    when(() => repository.getTarget('2024-09-26'))
+        .thenAnswer((_) async => const Right(1800));
+    final result = await usecase('2024-09-26');
     expect(result.isRight(), isTrue);
-    expect(result.getRight().toNullable(), 2000);
-    verify(() => repository.getTarget()).called(1);
+    expect(result.getRight().toNullable(), 1800);
+    verify(() => repository.getTarget('2024-09-26')).called(1);
   });
 
   test('propagates a repository failure', () async {
-    when(() => repository.getTarget()).thenAnswer(
+    when(() => repository.getTarget('2024-09-26')).thenAnswer(
       (_) async => const Left(
         CacheFailure(message: 'Could not read your calorie target.'),
       ),
     );
-    final result = await usecase();
+    final result = await usecase('2024-09-26');
     expect(result.isLeft(), isTrue);
   });
 }

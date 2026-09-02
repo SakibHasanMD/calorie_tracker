@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// Today's intake vs. daily target. Inline-editable target.
+import '../../../home/domain/entities/calorie_target_scope.dart';
+
+/// Today's (or a viewed date's) intake vs. its daily target. Inline-editable
+/// target with a scope choice (day / week / month / year) so a change can be
+/// applied to a whole period at once.
 class CalorieSummaryCard extends StatelessWidget {
   const CalorieSummaryCard({
     super.key,
@@ -11,7 +15,7 @@ class CalorieSummaryCard extends StatelessWidget {
 
   final double totalCalories;
   final int? target;
-  final ValueChanged<int>? onTargetChanged;
+  final void Function(int value, CalorieTargetScope scope)? onTargetChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -55,32 +59,75 @@ class CalorieSummaryCard extends StatelessWidget {
 
   Future<void> _editTarget(BuildContext context) async {
     final controller = TextEditingController(text: target?.toString() ?? '');
-    final newValue = await showDialog<int?>(
+    var scope = CalorieTargetScope.day;
+    final newValue = await showDialog<(int, CalorieTargetScope)?>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Daily calorie target'),
-        content: TextField(
-          controller: controller,
-          keyboardType: TextInputType.number,
-          autofocus: true,
-          decoration: const InputDecoration(suffixText: 'kcal'),
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: const Text('Daily calorie target'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextField(
+                controller: controller,
+                keyboardType: TextInputType.number,
+                autofocus: true,
+                decoration: const InputDecoration(suffixText: 'kcal'),
+              ),
+              const SizedBox(height: 16),
+              Text('Apply to', style: Theme.of(ctx).textTheme.labelLarge),
+              const SizedBox(height: 8),
+              SegmentedButton<CalorieTargetScope>(
+                segments: const [
+                  ButtonSegment(
+                    value: CalorieTargetScope.day,
+                    label: Text('Day'),
+                  ),
+                  ButtonSegment(
+                    value: CalorieTargetScope.week,
+                    label: Text('Week'),
+                  ),
+                  ButtonSegment(
+                    value: CalorieTargetScope.month,
+                    label: Text('Month'),
+                  ),
+                  ButtonSegment(
+                    value: CalorieTargetScope.year,
+                    label: Text('Year'),
+                  ),
+                ],
+                selected: {scope},
+                showSelectedIcon: false,
+                onSelectionChanged: (selection) {
+                  setDialogState(() => scope = selection.first);
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(null),
+              child: const Text('Cancel'),
+            ),
+            FilledButton(
+              onPressed: () {
+                final value = int.tryParse(controller.text.trim());
+                if (value == null) {
+                  Navigator.of(ctx).pop(null);
+                  return;
+                }
+                Navigator.of(ctx).pop((value, scope));
+              },
+              child: const Text('Save'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(null),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              final value = int.tryParse(controller.text.trim());
-              Navigator.of(ctx).pop(value);
-            },
-            child: const Text('Save'),
-          ),
-        ],
       ),
     );
-    if (newValue != null && newValue > 0) onTargetChanged?.call(newValue);
+    if (newValue != null && newValue.$1 > 0) {
+      onTargetChanged?.call(newValue.$1, newValue.$2);
+    }
   }
 
   static String _formatInt(double v) => v.toStringAsFixed(0);

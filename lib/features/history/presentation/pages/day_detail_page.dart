@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/di/injector.dart';
+import '../../../../core/error/failures.dart';
 import '../../../../core/widgets/empty_view.dart';
 import '../../../../core/widgets/error_view.dart';
 import '../../../../core/widgets/loading_view.dart';
@@ -12,14 +13,20 @@ import '../../../diary/presentation/cubit/daily_diary_state.dart';
 import '../../../diary/presentation/pages/entry_form_page.dart';
 import '../../../diary/presentation/widgets/calorie_summary_card.dart';
 import '../../../diary/presentation/widgets/diary_entry_tile.dart';
-import '../../../../core/error/failures.dart';
+import '../../../home/domain/entities/calorie_target_scope.dart';
+import '../../../home/domain/usecases/get_calorie_target.dart';
+import '../../../home/domain/usecases/set_calorie_target.dart';
 
 /// All entries for one specific date. Reuses the diary `DailyDiaryCubit`.
 ///
 /// Add opens `entry_form_page` prefilled for [date]; tapping an entry opens it
 /// in edit mode. Deleting is supported directly here (and swipe-to-delete on
 /// the tile). This is what provides "add/edit on a specific date".
-class DayDetailPage extends StatelessWidget {
+///
+/// The summary card shows the effective calorie target *for this date*
+/// (defaulting to 2000 when unset) and lets the user set a target for the
+/// scope they choose — including filling a whole missed past week/month.
+class DayDetailPage extends StatefulWidget {
   const DayDetailPage({
     super.key,
     required this.date,
@@ -29,13 +36,46 @@ class DayDetailPage extends StatelessWidget {
   final DateTime date;
   final DailyDiaryCubit dailyDiaryCubit;
 
-  String get _dateString => _formatDate(date);
+  @override
+  State<DayDetailPage> createState() => _DayDetailPageState();
+}
+
+class _DayDetailPageState extends State<DayDetailPage> {
+  int? _target;
+
+  String get _dateString => _formatDate(widget.date);
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTarget();
+  }
+
+  Future<void> _loadTarget() async {
+    final result =
+        await Injector.getIt<GetCalorieTarget>().call(_dateString);
+    if (!mounted) return;
+    setState(() => _target = result.getRight().toNullable());
+  }
+
+  Future<void> _setTarget(int value, CalorieTargetScope scope) async {
+    final result = await Injector.getIt<SetCalorieTarget>()
+        .call(_dateString, value, scope);
+    if (!mounted) return;
+    if (result.isRight()) {
+      setState(() => _target = value);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(result.getLeft().toNullable()?.message ?? '')),
+      );
+    }
+  }
 
   Future<void> _deleteEntry(BuildContext context, DiaryEntry entry) async {
     final result = await Injector.getIt<DeleteDiaryEntry>().call(entry.id!);
     if (!context.mounted) return;
     if (result.isRight()) {
-      await dailyDiaryCubit.load(_dateString);
+      await widget.dailyDiaryCubit.load(_dateString);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Could not delete entry')),
@@ -47,9 +87,9 @@ class DayDetailPage extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (_) => EntryFormPage(
-          date: date,
+          date: widget.date,
           existingEntry: entry,
-          dailyDiaryCubit: dailyDiaryCubit,
+          dailyDiaryCubit: widget.dailyDiaryCubit,
         ),
       ),
     );
@@ -58,11 +98,11 @@ class DayDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<DailyDiaryCubit, DailyDiaryState>(
-      bloc: dailyDiaryCubit,
+      bloc: widget.dailyDiaryCubit,
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: Text(_formatDateLong(date)),
+            title: Text(_formatDateLong(widget.date)),
           ),
           body: switch (state.status) {
             DailyDiaryStatus.initial ||
@@ -71,7 +111,7 @@ class DayDetailPage extends StatelessWidget {
             DailyDiaryStatus.error => ErrorView(
                 failure:
                     state.failure as Failure? ?? const UnexpectedFailure(),
-                onRetry: () => dailyDiaryCubit.load(_dateString),
+                onRetry: () => widget.dailyDiaryCubit.load(_dateString),
               ),
             DailyDiaryStatus.loaded => state.entries.isEmpty
                 ? const EmptyView(
@@ -82,7 +122,8 @@ class DayDetailPage extends StatelessWidget {
                     children: [
                       CalorieSummaryCard(
                         totalCalories: state.totalCalories,
-                        target: null,
+                        target: _target,
+                        onTargetChanged: _setTarget,
                       ),
                       ...state.entries.map(
                         (entry) => Dismissible(

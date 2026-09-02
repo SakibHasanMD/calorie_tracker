@@ -1,4 +1,5 @@
 import '../../../diary/domain/entities/diary_entry.dart';
+import '../../../../core/utils/calendar.dart';
 import '../entities/statistics.dart';
 
 /// Pure, dependency-free calorie statistics computation.
@@ -13,8 +14,10 @@ class CalculateStatistics {
     List<DiaryEntry> entries, {
     DateTime? now,
   }) {
-    final today = _dateOnly(now ?? DateTime.now());
-    final weekStart = _startOfWeek(today);
+    final today = dateOnly(now ?? DateTime.now());
+    // "This week" follows the app's locale convention: Saturday → Friday.
+    final weekStartDay = weekStart(today);
+    final weekEndDay = weekEnd(today);
     final monthStart = DateTime(today.year, today.month, 1);
     final monthEnd = DateTime(today.year, today.month + 1, 0);
 
@@ -34,9 +37,7 @@ class CalculateStatistics {
       allTimeCalories += entry.calories;
 
       if (d == today) todayCalories += entry.calories;
-      // "This week" = the full Mon-Sun calendar week; "this month" = the full
-      // calendar month. Trailing averages below look only backward.
-      if (!d.isBefore(weekStart) && !d.isAfter(weekStart.add(const Duration(days: 6)))) {
+      if (!d.isBefore(weekStartDay) && !d.isAfter(weekEndDay)) {
         weekCalories += entry.calories;
       }
       if (!d.isBefore(monthStart) && !d.isAfter(monthEnd)) {
@@ -55,12 +56,5 @@ class CalculateStatistics {
       sevenDayAverage: last7Calories / 7,
       thirtyDayAverage: last30Calories / 30,
     );
-  }
-
-  static DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
-
-  static DateTime _startOfWeek(DateTime date) {
-    final day = date.weekday; // 1 = Monday ... 7 = Sunday
-    return _dateOnly(date).subtract(Duration(days: day - 1));
   }
 }

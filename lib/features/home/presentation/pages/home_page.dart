@@ -15,6 +15,7 @@ import '../../../diary/presentation/widgets/calorie_summary_card.dart';
 import '../../../diary/presentation/widgets/diary_entry_tile.dart';
 import '../../../food_catalog/presentation/cubit/food_catalog_cubit.dart';
 import '../../../food_catalog/presentation/pages/manage_foods_page.dart';
+import '../../domain/entities/calorie_target_scope.dart';
 import '../../domain/usecases/get_calorie_target.dart';
 import '../../domain/usecases/set_calorie_target.dart';
 
@@ -47,7 +48,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Future<void> _loadTarget() async {
-    final result = await Injector.getIt<GetCalorieTarget>().call();
+    final result = await Injector.getIt<GetCalorieTarget>().call(_today);
     if (!mounted) return;
     setState(() {
       _target = result.getRight().toNullable();
@@ -55,8 +56,9 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
-  Future<void> _setTarget(int value) async {
-    final result = await Injector.getIt<SetCalorieTarget>().call(value);
+  Future<void> _setTarget(int value, CalorieTargetScope scope) async {
+    final result =
+        await Injector.getIt<SetCalorieTarget>().call(_today, value, scope);
     if (!mounted) return;
     if (result.isRight()) {
       setState(() => _target = value);
