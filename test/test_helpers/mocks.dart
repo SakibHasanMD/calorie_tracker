@@ -13,6 +13,8 @@ import 'package:calorie_tracker/features/food_catalog/domain/usecases/add_custom
 import 'package:calorie_tracker/features/food_catalog/domain/usecases/delete_custom_food.dart';
 import 'package:calorie_tracker/features/food_catalog/domain/usecases/get_all_foods.dart';
 import 'package:calorie_tracker/features/food_catalog/domain/usecases/update_custom_food.dart';
+import 'package:calorie_tracker/features/home/data/datasources/calorie_target_local_datasource.dart';
+import 'package:calorie_tracker/features/home/domain/repositories/calorie_target_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockFoodCatalogRepository extends Mock
@@ -43,3 +45,9 @@ class MockGetEntriesForDate extends Mock implements GetEntriesForDate {}
 class MockGetEntriesForRange extends Mock implements GetEntriesForRange {}
 
 class MockGetRecentFoods extends Mock implements GetRecentFoods {}
+
+class MockCalorieTargetRepository extends Mock
+    implements CalorieTargetRepository {}
+
+class MockCalorieTargetLocalDataSource extends Mock
+    implements CalorieTargetLocalDataSource {}

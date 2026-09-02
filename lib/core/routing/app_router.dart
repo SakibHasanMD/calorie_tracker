@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/food_catalog/presentation/pages/food_catalog_host_page.dart';
+import '../../features/home/presentation/pages/home_page.dart';
 
 /// Top-level navigation destinations shown in the bottom navigation bar.
 enum AppTab {
@@ -57,7 +57,7 @@ GoRouter buildAppRouter() {
             routes: [
               GoRoute(
                 path: AppTab.home.path,
-                builder: (context, state) => const FoodCatalogHostPage(),
+                builder: (context, state) => const HomePage(),
               ),
             ],
           ),

@@ -1,8 +1,6 @@
 import 'package:bloc_test/bloc_test.dart';
 import 'package:calorie_tracker/core/error/failures.dart';
 import 'package:calorie_tracker/features/diary/domain/entities/diary_entry.dart';
-import 'package:calorie_tracker/features/diary/domain/usecases/add_diary_entry.dart';
-import 'package:calorie_tracker/features/diary/domain/usecases/update_diary_entry.dart';
 import 'package:calorie_tracker/features/diary/presentation/cubit/diary_form_cubit.dart';
 import 'package:calorie_tracker/features/diary/presentation/cubit/diary_form_state.dart';
 import 'package:calorie_tracker/features/food_catalog/domain/entities/food.dart';

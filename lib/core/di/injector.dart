@@ -19,6 +19,11 @@ import '../../features/food_catalog/domain/usecases/delete_custom_food.dart';
 import '../../features/food_catalog/domain/usecases/get_all_foods.dart';
 import '../../features/food_catalog/domain/usecases/update_custom_food.dart';
 import '../../features/food_catalog/presentation/cubit/food_catalog_cubit.dart';
+import '../../features/home/data/datasources/calorie_target_local_datasource.dart';
+import '../../features/home/data/repositories/calorie_target_repository_impl.dart';
+import '../../features/home/domain/repositories/calorie_target_repository.dart';
+import '../../features/home/domain/usecases/get_calorie_target.dart';
+import '../../features/home/domain/usecases/set_calorie_target.dart';
 
 /// Central dependency injection container.
 ///
@@ -106,6 +111,25 @@ abstract final class Injector {
       )
       ..registerFactory<DailyDiaryCubit>(
         () => DailyDiaryCubit(getEntriesForDate: getIt<GetEntriesForDate>()),
+      );
+
+    // ------------------------------------------------------------------
+    // Track 4 — Home
+    // ------------------------------------------------------------------
+    getIt
+      ..registerLazySingleton<CalorieTargetLocalDataSource>(
+        CalorieTargetLocalDataSource.new,
+      )
+      ..registerLazySingleton<CalorieTargetRepository>(
+        () => CalorieTargetRepositoryImpl(
+          dataSource: getIt<CalorieTargetLocalDataSource>(),
+        ),
+      )
+      ..registerLazySingleton<GetCalorieTarget>(
+        () => GetCalorieTarget(repository: getIt<CalorieTargetRepository>()),
+      )
+      ..registerLazySingleton<SetCalorieTarget>(
+        () => SetCalorieTarget(repository: getIt<CalorieTargetRepository>()),
       );
   }
 }
