@@ -120,9 +120,8 @@ class _FoodPickerFieldState extends State<FoodPickerField> {
                 ),
                 title: Text(food.name),
                 subtitle: Text(
-                  food.measurementType == MeasurementType.gram
-                      ? '${food.caloriesPerGram?.toStringAsFixed(2) ?? '—'} kcal/g'
-                      : '${food.caloriesPerPiece?.toStringAsFixed(0) ?? '—'} kcal/piece',
+                  '${food.category.isEmpty ? 'Uncategorised' : food.category} · '
+                  '${food.measurementType == MeasurementType.gram ? '${food.caloriesPerGram?.toStringAsFixed(2) ?? '—'} kcal/g' : '${food.caloriesPerPiece?.toStringAsFixed(0) ?? '—'} kcal/piece'}',
                 ),
                 selected: selected,
                 onTap: () {
