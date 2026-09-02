@@ -1,8 +1,27 @@
 // Shared mocktail mock classes, centralized so each test file re-uses them
 // instead of redeclaring a mock per file.
-//
-// Track 1 has no repositories/data sources to mock yet — this file is created
-// empty so later tracks (2+) fill it in as they add feature-layer classes.
+import 'package:calorie_tracker/features/food_catalog/data/datasources/food_catalog_local_asset_datasource.dart';
+import 'package:calorie_tracker/features/food_catalog/data/datasources/food_catalog_persisted_datasource.dart';
+import 'package:calorie_tracker/features/food_catalog/domain/repositories/food_catalog_repository.dart';
+import 'package:calorie_tracker/features/food_catalog/domain/usecases/add_custom_food.dart';
+import 'package:calorie_tracker/features/food_catalog/domain/usecases/delete_custom_food.dart';
+import 'package:calorie_tracker/features/food_catalog/domain/usecases/get_all_foods.dart';
+import 'package:calorie_tracker/features/food_catalog/domain/usecases/update_custom_food.dart';
+import 'package:mocktail/mocktail.dart';
 
-// coverage:ignore-file
-library;
+class MockFoodCatalogRepository extends Mock
+    implements FoodCatalogRepository {}
+
+class MockFoodCatalogLocalAssetDataSource extends Mock
+    implements FoodCatalogLocalAssetDataSource {}
+
+class MockFoodCatalogPersistedDataSource extends Mock
+    implements FoodCatalogPersistedDataSource {}
+
+class MockGetAllFoods extends Mock implements GetAllFoods {}
+
+class MockAddCustomFood extends Mock implements AddCustomFood {}
+
+class MockUpdateCustomFood extends Mock implements UpdateCustomFood {}
+
+class MockDeleteCustomFood extends Mock implements DeleteCustomFood {}
