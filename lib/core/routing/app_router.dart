@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/history/presentation/pages/history_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 
 /// Top-level navigation destinations shown in the bottom navigation bar.
@@ -65,8 +66,7 @@ GoRouter buildAppRouter() {
             routes: [
               GoRoute(
                 path: AppTab.history.path,
-                builder: (context, state) =>
-                    const PlaceholderPage(label: 'History'),
+                builder: (context, state) => const HistoryPage(),
               ),
             ],
           ),

@@ -24,6 +24,8 @@ import '../../features/home/data/repositories/calorie_target_repository_impl.dar
 import '../../features/home/domain/repositories/calorie_target_repository.dart';
 import '../../features/home/domain/usecases/get_calorie_target.dart';
 import '../../features/home/domain/usecases/set_calorie_target.dart';
+import '../../features/history/domain/usecases/get_calendar_summary.dart';
+import '../../features/history/presentation/cubit/history_cubit.dart';
 
 /// Central dependency injection container.
 ///
@@ -130,6 +132,19 @@ abstract final class Injector {
       )
       ..registerLazySingleton<SetCalorieTarget>(
         () => SetCalorieTarget(repository: getIt<CalorieTargetRepository>()),
+      );
+
+    // ------------------------------------------------------------------
+    // Track 5 — History
+    // ------------------------------------------------------------------
+    getIt
+      ..registerLazySingleton<GetCalendarSummary>(
+        () => GetCalendarSummary(
+          getEntriesForRange: getIt<GetEntriesForRange>(),
+        ),
+      )
+      ..registerFactory<HistoryCubit>(
+        () => HistoryCubit(getCalendarSummary: getIt<GetCalendarSummary>()),
       );
   }
 }
