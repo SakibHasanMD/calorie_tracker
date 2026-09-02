@@ -28,6 +28,7 @@ void main() {
   test('passes through a failure', () async {
     const failure = NotFoundFailure();
     when(() => repository.deleteCustomFood('custom_abc'))
+        // ignore: prefer_const_constructors
         .thenAnswer((_) async => Left(failure));
 
     final result = await usecase.call('custom_abc');

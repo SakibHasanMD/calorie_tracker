@@ -16,9 +16,10 @@ void main() {
     usecase = SearchFoods(repository: repository);
   });
 
-  test('calls repository.searchFoods with the query and passes through', () async {
+  test('calls repository.searchFoods with the query and passes through',
+      () async {
     when(() => repository.searchFoods('rice')).thenAnswer(
-      (_) async => Right([sampleSeedGramFood]),
+      (_) async => const Right([sampleSeedGramFood]),
     );
 
     final result = await usecase.call('rice');
@@ -31,7 +32,7 @@ void main() {
   test('passes through a failure', () async {
     const failure = UnexpectedFailure();
     when(() => repository.searchFoods('x'))
-        .thenAnswer((_) async => Left(failure));
+        .thenAnswer((_) async => const Left(failure));
 
     final result = await usecase.call('x');
 

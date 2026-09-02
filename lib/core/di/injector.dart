@@ -160,6 +160,8 @@ abstract final class Injector {
         () => StatisticsCubit(
           getEntriesForRange: getIt<GetEntriesForRange>(),
           calculateStatistics: getIt<CalculateStatistics>(),
+          calorieTargetLocalDataSource:
+              getIt<CalorieTargetLocalDataSource>(),
         ),
       );
   }

@@ -19,7 +19,7 @@ void main() {
   test('calls repository.updateCustomFood and passes through the updated food',
       () async {
     when(() => repository.updateCustomFood(sampleCustomFood))
-        .thenAnswer((_) async => Right(sampleCustomFood));
+        .thenAnswer((_) async => const Right(sampleCustomFood));
 
     final result = await usecase.call(sampleCustomFood);
 
@@ -30,7 +30,7 @@ void main() {
   test('passes through a failure', () async {
     const failure = NotFoundFailure();
     when(() => repository.updateCustomFood(sampleCustomFood))
-        .thenAnswer((_) async => Left(failure));
+        .thenAnswer((_) async => const Left(failure));
 
     final result = await usecase.call(sampleCustomFood);
 

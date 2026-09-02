@@ -8,9 +8,10 @@ import '../../../../core/widgets/loading_view.dart';
 import '../cubit/statistics_cubit.dart';
 import '../cubit/statistics_state.dart';
 import '../widgets/stat_card.dart';
+import '../widgets/target_summary_card.dart';
 
-/// The Statistics tab (Track 6): today / week / month / all-time totals and
-/// 7-day / 30-day averages.
+/// The Statistics tab: today / week / month / all-time totals (with target
+/// comparison) and 7-day / 30-day averages.
 class StatisticsPage extends StatelessWidget {
   const StatisticsPage({super.key});
 
@@ -25,8 +26,6 @@ class StatisticsPage extends StatelessWidget {
 
 class _StatisticsView extends StatelessWidget {
   const _StatisticsView();
-
-  String _kcal(double v) => '${v.toStringAsFixed(0)} kcal';
 
   @override
   Widget build(BuildContext context) {
@@ -54,57 +53,46 @@ class _StatisticsView extends StatelessWidget {
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: const EdgeInsets.all(8),
                   children: [
-                    _SectionLabel('Totals'),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: StatCard(
-                            label: 'Today',
-                            value: _kcal(s.todayCalories),
-                            icon: Icons.today_outlined,
-                          ),
-                        ),
-                        Expanded(
-                          child: StatCard(
-                            label: 'This week',
-                            value: _kcal(s.weekCalories),
-                            icon: Icons.date_range_outlined,
-                          ),
-                        ),
-                      ],
+                    const _SectionLabel('Totals'),
+                    TargetSummaryCard(
+                      label: 'Today',
+                      icon: Icons.today_outlined,
+                      consumed: s.todayCalories,
+                      target: s.todayTarget.toDouble(),
                     ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: StatCard(
-                            label: 'This month',
-                            value: _kcal(s.monthCalories),
-                            icon: Icons.calendar_month_outlined,
-                          ),
-                        ),
-                        Expanded(
-                          child: StatCard(
-                            label: 'All time',
-                            value: _kcal(s.allTimeCalories),
-                            icon: Icons.history_outlined,
-                          ),
-                        ),
-                      ],
+                    TargetSummaryCard(
+                      label: 'This week',
+                      icon: Icons.date_range_outlined,
+                      consumed: s.weekCalories,
+                      target: s.weekTarget.toDouble(),
                     ),
-                    _SectionLabel('Averages'),
+                    TargetSummaryCard(
+                      label: 'This month',
+                      icon: Icons.calendar_month_outlined,
+                      consumed: s.monthCalories,
+                      target: s.monthTarget.toDouble(),
+                    ),
+                    TargetSummaryCard(
+                      label: 'All time',
+                      icon: Icons.history_outlined,
+                      consumed: s.allTimeCalories,
+                      target: s.allTimeTarget.toDouble(),
+                    ),
+                    const _SectionLabel('Averages'),
                     Row(
                       children: [
                         Expanded(
                           child: StatCard(
                             label: '7-day average',
-                            value: _kcal(s.sevenDayAverage),
+                            value: '${s.sevenDayAverage.toStringAsFixed(0)} kcal',
                             icon: Icons.trending_up,
                           ),
                         ),
                         Expanded(
                           child: StatCard(
                             label: '30-day average',
-                            value: _kcal(s.thirtyDayAverage),
+                            value:
+                                '${s.thirtyDayAverage.toStringAsFixed(0)} kcal',
                             icon: Icons.trending_up,
                           ),
                         ),

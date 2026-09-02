@@ -39,7 +39,7 @@ void main() {
       'emits loading then loaded on success',
       build: () {
         when(() => getAllFoods()).thenAnswer(
-          (_) async => Right<Failure, List<Food>>([
+          (_) async => const Right<Failure, List<Food>>([
             sampleSeedGramFood,
             sampleCustomFood,
           ]),
@@ -82,7 +82,7 @@ void main() {
       'updates the active query against the loaded list',
       build: () {
         when(() => getAllFoods()).thenAnswer(
-          (_) async => Right<Failure, List<Food>>([
+          (_) async => const Right<Failure, List<Food>>([
             sampleSeedGramFood,
             sampleSeedPieceFood,
             sampleCustomFood,
@@ -117,10 +117,10 @@ void main() {
       'appends the added food and stays in loaded',
       build: () {
         when(() => getAllFoods()).thenAnswer(
-          (_) async => Right<Failure, List<Food>>([sampleSeedGramFood]),
+          (_) async => const Right<Failure, List<Food>>([sampleSeedGramFood]),
         );
         when(() => addCustomFood(any())).thenAnswer(
-          (_) async => Right<Failure, Food>(sampleCustomFood),
+          (_) async => const Right<Failure, Food>(sampleCustomFood),
         );
         return build();
       },
@@ -141,7 +141,7 @@ void main() {
       'emits error on add failure',
       build: () {
         when(() => getAllFoods()).thenAnswer(
-          (_) async => Right<Failure, List<Food>>([sampleSeedGramFood]),
+          (_) async => const Right<Failure, List<Food>>([sampleSeedGramFood]),
         );
         when(() => addCustomFood(any())).thenAnswer(
           (_) async => const Left<Failure, Food>(
@@ -170,7 +170,7 @@ void main() {
       'replaces the matching food in place',
       build: () {
         when(() => getAllFoods()).thenAnswer(
-          (_) async => Right<Failure, List<Food>>([
+          (_) async => const Right<Failure, List<Food>>([
             sampleSeedGramFood,
             sampleCustomFood,
           ]),
@@ -183,7 +183,8 @@ void main() {
       },
       act: (cubit) async {
         await cubit.loadFoods();
-        await cubit.updateCustom(sampleCustomFood.copyWith(name: 'Updated shake'));
+        await cubit
+            .updateCustom(sampleCustomFood.copyWith(name: 'Updated shake'));
       },
       skip: 2,
       expect: () => [
@@ -203,7 +204,7 @@ void main() {
       'removes the matching food from the list',
       build: () {
         when(() => getAllFoods()).thenAnswer(
-          (_) async => Right<Failure, List<Food>>([
+          (_) async => const Right<Failure, List<Food>>([
             sampleSeedGramFood,
             sampleCustomFood,
           ]),
@@ -230,7 +231,7 @@ void main() {
       'emits error on delete failure',
       build: () {
         when(() => getAllFoods()).thenAnswer(
-          (_) async => Right<Failure, List<Food>>([sampleSeedGramFood]),
+          (_) async => const Right<Failure, List<Food>>([sampleSeedGramFood]),
         );
         when(() => deleteCustomFood(any())).thenAnswer(
           (_) async => const Left<Failure, Unit>(

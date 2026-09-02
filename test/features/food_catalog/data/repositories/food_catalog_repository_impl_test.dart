@@ -13,7 +13,7 @@ void main() {
   late MockFoodCatalogPersistedDataSource persisted;
   late FoodCatalogRepositoryImpl repo;
 
-  final seedFood = FoodModel(
+  const seedFood = FoodModel(
     id: 'seed_0001',
     name: 'Rice',
     category: 'Grains',
@@ -35,10 +35,8 @@ void main() {
     when(() => persisted.readCustomFoods())
         .thenAnswer((_) async => <FoodModel>[]);
     when(() => asset.fetchFoods()).thenAnswer((_) async => [seedFood]);
-    when(() => persisted.writeCatalog(any()))
-        .thenAnswer((_) async {});
-    when(() => persisted.writeCustomFoods(any()))
-        .thenAnswer((_) async {});
+    when(() => persisted.writeCatalog(any())).thenAnswer((_) async {});
+    when(() => persisted.writeCustomFoods(any())).thenAnswer((_) async {});
   });
 
   group('getAllFoods', () {
@@ -58,8 +56,7 @@ void main() {
     test('subsequent launches read only the persisted file, never the asset',
         () async {
       when(() => persisted.catalogFileExists()).thenAnswer((_) async => true);
-      when(() => persisted.readCatalog())
-          .thenAnswer((_) async => [seedFood]);
+      when(() => persisted.readCatalog()).thenAnswer((_) async => [seedFood]);
 
       final result = await repo.getAllFoods();
 
@@ -71,9 +68,8 @@ void main() {
 
     test('merges custom foods into the combined list', () async {
       when(() => persisted.catalogFileExists()).thenAnswer((_) async => true);
-      when(() => persisted.readCatalog())
-          .thenAnswer((_) async => [seedFood]);
-      final custom = FoodModel(
+      when(() => persisted.readCatalog()).thenAnswer((_) async => [seedFood]);
+      const custom = FoodModel(
         id: 'custom_1',
         name: 'Protein shake',
         category: 'Protein',
@@ -83,8 +79,7 @@ void main() {
         isCustom: true,
         createdAt: '2024-01-01T00:00:00.000',
       );
-      when(() => persisted.readCustomFoods())
-          .thenAnswer((_) async => [custom]);
+      when(() => persisted.readCustomFoods()).thenAnswer((_) async => [custom]);
 
       final result = await repo.getAllFoods();
 
@@ -119,7 +114,7 @@ void main() {
       when(() => persisted.catalogFileExists()).thenAnswer((_) async => true);
       when(() => persisted.readCatalog()).thenAnswer((_) async => [
             seedFood,
-            FoodModel(
+            const FoodModel(
               id: 'seed_0002',
               name: 'Chicken breast',
               category: 'Protein',
@@ -139,13 +134,14 @@ void main() {
   group('addCustomFood', () {
     test('appends a custom food and persists to custom_foods.json', () async {
       FoodModel? written;
-      when(() => persisted.writeCustomFoods(any())).thenAnswer((invocation) async {
-        written = (invocation.positionalArguments.single as List<FoodModel>)
-            .single;
+      when(() => persisted.writeCustomFoods(any()))
+          .thenAnswer((invocation) async {
+        written =
+            (invocation.positionalArguments.single as List<FoodModel>).single;
       });
 
       final result = await repo.addCustomFood(
-        Food(
+        const Food(
           id: '',
           name: '  Protein shake  ',
           category: 'Protein',
@@ -170,7 +166,7 @@ void main() {
 
     test('rejects an empty name with ValidationFailure', () async {
       final result = await repo.addCustomFood(
-        Food(
+        const Food(
           id: '',
           name: '   ',
           category: 'Protein',
@@ -187,7 +183,7 @@ void main() {
 
   group('updateCustomFood', () {
     test('updates an existing custom food', () async {
-      final existing = FoodModel(
+      const existing = FoodModel(
         id: 'custom_1',
         name: 'Old name',
         category: 'Protein',
@@ -222,7 +218,7 @@ void main() {
 
   group('deleteCustomFood', () {
     test('removes the custom food and persists', () async {
-      final existing = FoodModel(
+      const existing = FoodModel(
         id: 'custom_1',
         name: 'Protein shake',
         category: 'Protein',

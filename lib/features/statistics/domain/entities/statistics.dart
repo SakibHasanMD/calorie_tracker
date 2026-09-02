@@ -5,9 +5,13 @@ class Statistics extends Equatable {
   const Statistics({
     required this.referenceDate,
     required this.todayCalories,
+    required this.todayTarget,
     required this.weekCalories,
+    required this.weekTarget,
     required this.monthCalories,
+    required this.monthTarget,
     required this.allTimeCalories,
+    required this.allTimeTarget,
     required this.sevenDayAverage,
     required this.thirtyDayAverage,
   });
@@ -17,14 +21,18 @@ class Statistics extends Equatable {
   final DateTime referenceDate;
 
   final double todayCalories;
+  final int todayTarget;
 
-  /// Total for the Monday-to-Sunday week containing [referenceDate].
+  /// Total for the Sat-Fri week containing [referenceDate].
   final double weekCalories;
+  final int weekTarget;
 
   /// Total for the calendar month containing [referenceDate].
   final double monthCalories;
+  final int monthTarget;
 
   final double allTimeCalories;
+  final int allTimeTarget;
 
   /// Average daily intake over the trailing 7 days (including today).
   final double sevenDayAverage;
@@ -36,9 +44,13 @@ class Statistics extends Equatable {
   List<Object?> get props => [
         referenceDate,
         todayCalories,
+        todayTarget,
         weekCalories,
+        weekTarget,
         monthCalories,
+        monthTarget,
         allTimeCalories,
+        allTimeTarget,
         sevenDayAverage,
         thirtyDayAverage,
       ];

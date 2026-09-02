@@ -17,20 +17,21 @@ void main() {
   });
 
   test('calls repository.getAllFoods and passes the result through', () async {
-    when(() => repository.getAllFoods())
-        .thenAnswer((_) async => Right([sampleSeedGramFood, sampleCustomFood]));
+    when(() => repository.getAllFoods()).thenAnswer(
+        (_) async => const Right([sampleSeedGramFood, sampleCustomFood]));
 
     final result = await usecase();
 
     expect(result.isRight(), isTrue);
-    expect(result.getRight().toNullable(), [sampleSeedGramFood, sampleCustomFood]);
+    expect(
+        result.getRight().toNullable(), [sampleSeedGramFood, sampleCustomFood]);
     verify(() => repository.getAllFoods()).called(1);
   });
 
   test('passes through a failure', () async {
     const failure = CacheFailure(message: 'nope');
     when(() => repository.getAllFoods())
-        .thenAnswer((_) async => Left(failure));
+        .thenAnswer((_) async => const Left(failure));
 
     final result = await usecase();
 
