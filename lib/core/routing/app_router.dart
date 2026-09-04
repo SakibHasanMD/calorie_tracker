@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/theme/app_colors.dart';
 import '../../features/history/presentation/pages/history_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
 import '../../features/statistics/presentation/pages/statistics_page.dart';
@@ -9,8 +10,8 @@ import '../../features/statistics/presentation/pages/statistics_page.dart';
 enum AppTab {
   home('/home', Icons.home_outlined, Icons.home, 'Home'),
   history('/history', Icons.history_outlined, Icons.history, 'History'),
-  statistics('/statistics', Icons.bar_chart_outlined, Icons.bar_chart,
-      'Statistics');
+  statistics(
+      '/statistics', Icons.bar_chart_outlined, Icons.bar_chart, 'Statistics');
 
   const AppTab(
     this.path,
@@ -83,12 +84,12 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dividerGrey = Theme.of(context).dividerColor;
     return Scaffold(
       body: navigationShell,
       bottomNavigationBar: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(top: BorderSide(color: dividerGrey)),
+        position: DecorationPosition.foreground,
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: AppColors.chromeBorder, width: 1)),
         ),
         child: NavigationBar(
           selectedIndex: navigationShell.currentIndex,

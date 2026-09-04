@@ -161,23 +161,35 @@ class _HomePageState extends State<HomePage> {
                   )
                 else
                   ...state.entries.map(
-                    (entry) => Dismissible(
-                      key: ValueKey(entry.id),
-                      direction: DismissDirection.endToStart,
-                      background: Container(
-                        color: Theme.of(context).colorScheme.error,
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 20),
-                        child: Icon(
-                          Icons.delete_outline,
-                          color: Theme.of(context).colorScheme.onError,
-                        ),
+                    (entry) => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
                       ),
-                      onDismissed: (_) => _deleteEntry(entry),
-                      child: DiaryEntryTile(
-                        entry: entry,
-                        onTap: () => _openEntry(entry: entry),
-                        onDelete: () => _deleteEntry(entry),
+                      child: Card(
+                        margin: EdgeInsets.zero,
+                        child: Dismissible(
+                          key: ValueKey(entry.id),
+                          direction: DismissDirection.endToStart,
+                          background: Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.error,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            alignment: Alignment.centerRight,
+                            padding: const EdgeInsets.only(right: 20),
+                            child: Icon(
+                              Icons.delete_outline,
+                              color: Theme.of(context).colorScheme.onError,
+                            ),
+                          ),
+                          onDismissed: (_) => _deleteEntry(entry),
+                          child: DiaryEntryTile(
+                            entry: entry,
+                            onTap: () => _openEntry(entry: entry),
+                            onDelete: () => _deleteEntry(entry),
+                          ),
+                        ),
                       ),
                     ),
                   ),
